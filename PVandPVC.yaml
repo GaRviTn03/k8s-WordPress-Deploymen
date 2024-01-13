@@ -9,7 +9,7 @@ spec:
     - ReadWriteMany
   persistentVolumeReclaimPolicy: Retain
   nfs:
-    server: 43.205.198.234
+    server:                               #Just add your NFS server public ip
     path: /nfs/database
   mountOptions:
     - hard
@@ -38,7 +38,7 @@ spec:
     - ReadWriteMany
   persistentVolumeReclaimPolicy: Retain
   nfs:
-    server: 43.205.198.234
+    server:                                  #Just add your NFS server public ip
     path: /nfs/wordpress
   mountOptions:
     - hard
