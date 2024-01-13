@@ -1,0 +1,56 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: my-db-pv
+spec:
+  capacity:
+    storage: 2G
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  nfs:
+    server: 43.205.198.234
+    path: /nfs/database
+  mountOptions:
+    - hard
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: my-db-pvc
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1G
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: my-wp-pv
+spec:
+  capacity:
+    storage: 2G
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  nfs:
+    server: 43.205.198.234
+    path: /nfs/wordpress
+  mountOptions:
+    - hard
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: my-wp-pvc
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1G

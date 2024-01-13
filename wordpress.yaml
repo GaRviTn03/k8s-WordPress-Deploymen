@@ -1,0 +1,119 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: my-db
+    namespace: newproject
+spec:
+    replicas: 1
+    selector:
+       matchLabels:
+           app: db
+    template:
+       metadata:
+          name: my-pod
+          labels:
+             app: db
+       spec:
+           containers:
+               - name: database
+                 image: mariadb
+                 env:
+                     - name: MARIADB_DATABASE
+                       valueFrom:
+                          secretKeyRef:
+                            name: mariadb-secret
+                            key: MARIADB_DATABASE
+                     - name: MARIADB_ROOT_PASSWORD
+                       valueFrom:
+                          secretKeyRef:
+                            name: mariadb-secret
+                            key: MARIADB_ROOT_PASSWORD
+                 ports:
+                     - containerPort: 3306
+                 volumeMounts:
+                     - mountPath: /var/lib/mysql
+                       name: xyz
+           volumes:
+              - name: xyz
+                persistentVolumeClaim: 
+                   claimName: my-db-pvc
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+    name: svc-db
+    namespace: newproject
+spec:
+    selector: 
+           app: db
+    ports:
+       - port: 3306
+         targetPort: 3306
+
+---
+             
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-wp
+  namespace: newproject
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: my-wp
+  template:
+    metadata:
+      name: my-wp-pod
+      labels:
+        app: my-wp
+    spec:
+      containers:
+      - image: wordpress
+        name: wordpress
+        env:
+          - name: WORDPRESS_DB_HOST
+            valueFrom:
+              secretKeyRef:
+                name: wordpress-secret
+                key: WORDPRESS_DB_HOST
+          - name: WORDPRESS_DB_USER
+            valueFrom:
+              secretKeyRef:
+                name: wordpress-secret
+                key: WORDPRESS_DB_USER
+          - name: WORDPRESS_DB_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: wordpress-secret
+                key: WORDPRESS_DB_PASSWORD
+          - name: WORDPRESS_DB_NAME
+            valueFrom:
+              secretKeyRef:
+                name: wordpress-secret
+                key: WORDPRESS_DB_NAME
+        ports:
+          - containerPort: 80
+        volumeMounts:
+          - mountPath: /var/www/html
+            name: pqr
+      volumes:
+        - name: pqr
+          persistentVolumeClaim: 
+            claimName: my-wp-pvc
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: svc-wp
+  namespace: newproject
+spec:
+  type: NodePort
+  selector:
+    app: my-wp
+  ports:
+    - port: 80
+      targetPort: 80
+      nodePort: 30500
