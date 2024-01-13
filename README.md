@@ -1,1 +1,1 @@
-# k8s-WordPress-Deploymen
+# k8s-WordPress-Deployment
